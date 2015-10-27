@@ -5,25 +5,21 @@ import json
 import datetime
 import base64
 
-### Retrieve API key from local file ./teamworkpm_api_key.txt
-def getApiKey():
+### Retrieve API key from local file ./config.json
+def getConfig():
     curPath = os.getcwd()
-    f = open('%s/api_key.txt' % curPath, 'rb')
-    apikey = f.readline().strip()
+    f = open('%s/config.json' % curPath, 'rb')
+    theJson = json.load(f)
     f.close()
-    return apikey
+    #for key in theJson:
+        #print str(key) + ': ' + theJson[key]
+    return theJson
 
-def getUser():
-    curPath = os.getcwd()
-    f = open('%s/user_email.txt' % curPath, 'rb')
-    useremail = f.readline().strip()
-    f.close()
-    return useremail
-
-### Create authorization handler for TeamworkPM
+### Create authorization handler for Nutshell
 def authUrl(theurl):
+    config = getConfig()
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    passman.add_password(None, theurl, getApiKey(), 'x')
+    passman.add_password(None, theurl, config[username], config[api_key])
     
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
     
@@ -44,13 +40,16 @@ def getUrl(theurl):
 def postUrl(theurl, thePost):
 
     req = urllib2.Request(theurl)
-    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (getUser(), getApiKey()))
+    config = getConfig()
+    print json.dumps(config)
+    user = config['username']
+    password = config['api_key']
+    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
     req.add_header('Authorization', auth)
     req.add_header('Content-Type', 'application/json')
-    req.add_header('id': '<id>', 'application/json')
-    req.add_header('method': 'getLead', 'application/json')
+    #req.add_header('id': '<id>', 'application/json')
+    #req.add_header('method': 'getLead', 'application/json')
 #    req.add_header('params': { 'leadId': 1078 } }
 
     return urllib2.urlopen(req, json.dumps(thePost))
 
-print postUrl('https://app01.nutshell.com/api/vq/json', { 'leadId': 1078 })
