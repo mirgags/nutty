@@ -47,9 +47,6 @@ def postUrl(theurl, thePost):
     auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
     req.add_header('Authorization', auth)
     req.add_header('Content-Type', 'application/json')
-    #req.add_header('id': '<id>', 'application/json')
-    #req.add_header('method': 'getLead', 'application/json')
-#    req.add_header('params': { 'leadId': 1078 } }
 
     return urllib2.urlopen(req, json.dumps(thePost))
 
