@@ -43,7 +43,11 @@ if __name__ == '__main__':
     for i in range(len(resultList)):
         print resultList[i]['name'] +\
             ' - id: ' + str(resultList[i]['id'])
-    for key in accounts:
-        #print '|'.join(str(key).split(' '))
-        regexp = re.compile('|'.join(str(key).split(' ')))
+        for key in accounts:
+            #print '|'.join(str(key).split(' '))
+            regexp = re.compile('|'.join(str(key).split(' ')))
+            matchObj = regexp.search(resultList[i]['name'], re.I)
+            if matchObj:
+                print 'We matched ' + resultList[i]['name'] + ' with ' + key
+            matchObj = None
 
