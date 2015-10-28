@@ -50,3 +50,41 @@ def postUrl(theurl, thePost):
 
     return urllib2.urlopen(req, json.dumps(thePost))
 
+def discoverEndpoint():
+    config = getConfig()
+    theJson = { "method": "getApiForUsername",
+                "params": {"username": config['username']},
+                "id": "apeye"
+              }
+    res = postUrl('http://api.nutshell.com/v1/json', theJson)
+    print res.code
+    resJson = json.loads(res.read())
+    print resJson
+    apiEndpoint = 'https://' + resJson['result']['api'] + '/api/v1/json'
+    print apiEndpoint
+    return apiEndpoint
+
+def getAccounts(apiEndpoint, page=None, resultList=None):
+    if resultList:
+        result = resultList
+    else:
+        result = []
+    if page:
+        page = page
+    else:
+        page = 1
+    theJson = { "method": "findAccounts",
+                "params": {
+                    "accountType": [ 1, 33, 25, 29 ],
+                    "limit": 100,
+                    "page": page
+                },
+                "id": "apeye" }
+    res = postUrl(apiEndpoint, theJson)
+    resJson = json.loads(res.read())
+    for i in range(len(resJson['result'])):
+        result.append(resJson['result'][i])
+    if len(resJson['result']) < theJson['params']['limit']:
+        return result
+    else:
+        return getAccounts(apiEndpoint, page + 1, result)
