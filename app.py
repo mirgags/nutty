@@ -62,4 +62,4 @@ def webCalls():
 if __name__ == '__main__':
     rowList = parseCsv('harvest.csv')
     totalHours(rowList)
-
+    webCalls()
