@@ -36,7 +36,7 @@ def getUrl(theurl):
     
     return pagehandle.read()
 
-### POST request accepts the Teamwork-specific URL and a JSON object with      the necessary parameters for the action.
+### POST request accepts the Nutshell URL and a JSON object with the necessary parameters for the action.
 def postUrl(theurl, thePost):
 
     req = urllib2.Request(theurl)
@@ -63,6 +63,26 @@ def discoverEndpoint():
     apiEndpoint = 'https://' + resJson['result']['api'] + '/api/v1/json'
     print apiEndpoint
     return apiEndpoint
+
+def createLead(apiEndpoint, data=None):
+    theJson = {
+        "method": "newLead",
+        "params": data
+    }
+    res = postUrl(apiEndpoint, theJson)
+    print res.read()
+    try:
+        return json.loads(res.read())
+    except:
+        return { "response": "no JSON response received" }
+
+def getProducts(apiEndpoint):
+    theJson = { "method": "findProducts",
+                "params": [],
+                "id": "apeye" }
+    res = postUrl(apiEndpoint, theJson)
+    print 'Response Code: ' + res.code
+    return json.loads(res.read())
 
 def getAccounts(apiEndpoint, page=None, resultList=None):
     if resultList:
