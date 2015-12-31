@@ -64,6 +64,17 @@ def discoverEndpoint():
     print apiEndpoint
     return apiEndpoint
 
+def findLeadOutcomes(apiEndpoint):
+    theJson = {
+        "method": "findLead_Outcomes"
+    }
+    res = postUrl(apiEndpoint, theJson)
+    print res.read()
+    try:
+        return json.loads(res.read())
+    except:
+        return { "response": "no JSON response received" }
+
 def createLead(apiEndpoint, data=None):
     theJson = {
         "method": "newLead",
@@ -75,6 +86,18 @@ def createLead(apiEndpoint, data=None):
         return json.loads(res.read())
     except:
         return { "response": "no JSON response received" }
+
+def editLead(apiEndpoint, revId, data=None):
+    theJson = {
+        "method": "editLead",
+        "params": "data"
+    }
+    res = postUrl(apiEndpoint, revId, theJson)
+    try:
+        return json.loads(res.read())
+    except:
+        return { "response": "no JSON response received" }
+
 
 def getProducts(apiEndpoint):
     theJson = { "method": "findProducts",

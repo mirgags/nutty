@@ -96,7 +96,7 @@ if __name__ == '__main__':
             data = {
                 "lead": {
                     "primaryAccount": {"id": companyID},
-                    "dueTime": "2015-09-30T23:59:19-05:00",
+                    "dueTime": "2015-12-31T23:59:19-05:00",
                     "tags": [ "PINT Maintenance"],
                     "products": [
                         {
@@ -115,6 +115,24 @@ if __name__ == '__main__':
                 }
             }
             res = createLead(apiUrl, data)
+            ### Want to edit the lead here
+            data = {
+                "lead": {
+                    "primaryAccount": {"id": companyID},
+                    "name": "4Q2015 Maintenance",
+                    "status": 10,
+                    "createdTime": "2015-07-01T00:10:01-01:00",
+                    "outcome": {
+                        "id": "",
+                        "entityType": "Lead_Outcomes",
+                        "rev": res["lead"]["rev"],
+                        "type": 10,
+                        "description": "Won"
+                    }
+                    "closedTime": "2015-12-31T23:59:19-05:00"
+                }
+            }
+            #res = editLead(apiUrl, res["lead"]["rev"], data)
             #print json.dumps(res)
         count += 1
 
