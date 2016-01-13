@@ -4,6 +4,7 @@ import urllib2
 import json
 import datetime
 import base64
+import requests
 
 ### Retrieve API key from local file ./config.json
 def getConfig():
@@ -57,11 +58,11 @@ def discoverEndpoint():
                 "id": "apeye"
               }
     res = postUrl('http://api.nutshell.com/v1/json', theJson)
-    print res.code
+    #print res.code
     resJson = json.loads(res.read())
-    print resJson
+    #print resJson
     apiEndpoint = 'https://' + resJson['result']['api'] + '/api/v1/json'
-    print apiEndpoint
+    #print apiEndpoint
     return apiEndpoint
 
 def findLeadOutcomes(apiEndpoint):
@@ -76,21 +77,41 @@ def findLeadOutcomes(apiEndpoint):
         return { "response": "no JSON response received" }
 
 def createLead(apiEndpoint, data=None):
+    config = getConfig()
+    print json.dumps(config)
+    user = config['username']
+    password = config['api_key']
+    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
+    headers = {
+    'authorization': auth,
+    'content-type': 'application/json'
+    }
     theJson = {
         "method": "newLead",
         "params": data
     }
-    res = postUrl(apiEndpoint, theJson)
-    print res.read()
+    #res = postUrl(apiEndpoint, theJson)
+    resCreate = requests.post(apiEndpoint, headers=headers, data=json.dumps(theJson))
+    print "Response Code:"
+    print resCreate.status_code
     try:
-        return json.loads(res.read())
+        print "Response JSON:\n" + json.dumps(resCreate.json())
+    except:
+        print "Response JSON: None\n"
+
+    try:
+        return resCreate.text
     except:
         return { "response": "no JSON response received" }
 
-def editLead(apiEndpoint, revId, data=None):
+def editLead(apiEndpoint, leadId, revId, data=None):
     theJson = {
         "method": "editLead",
-        "params": "data"
+        "params": {
+            "leadId": leadId,
+            "rev": revId,
+            "lead": data["lead"]
+        }
     }
     res = postUrl(apiEndpoint, revId, theJson)
     try:

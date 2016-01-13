@@ -9,6 +9,18 @@ def parseCsv(csvFile):
             theList.append(row)
     return theList
 
+def clearHours():
+    with open('accounts.json', 'rb') as f:
+        sumDict = json.load(f)
+    f.close()
+    for key in sumDict:
+        for akey in sumDict[key]:
+            if akey != "id":
+                sumDict[key][akey] = 0.0
+    with open('accounts.json', 'wb') as f:
+        json.dump(sumDict, f, indent=4, sort_keys=True)
+    f.close()   
+
 def totalHours(rowList):
     with open('accounts.json', 'rb') as f:
         sumDict = json.load(f)
@@ -38,18 +50,20 @@ def totalHours(rowList):
     return sumDict
 
 
-
 if __name__ == '__main__':
     ### Import report from Harvest CSV file
     rowList = parseCsv('harvest.csv')
+
+    ### Clear accounts.json of current hours and sum
+    clearHours()
 
     ### Sum projects in unified Account JSON
     accounts = totalHours(rowList)
 
     ### PrettyPrint Accounts to JSON
-    #with open('accounts.json', 'wb') as f:
-    #    json.dump(accounts, f, indent=4, sort_keys=True)
-    #f.close()
+    with open('accounts.json', 'wb') as f:
+        json.dump(accounts, f, indent=4, sort_keys=True)
+    f.close()
 
     ### Get Nutshell API Endpoint
     apiUrl = discoverEndpoint()
@@ -63,16 +77,17 @@ if __name__ == '__main__':
 
     count = 0
     for key in theJson:
-        if count < 3 and theJson[key]['Total'] > 0:
+        if count == 3 and theJson[key]['Total'] > 0:
             companyID = theJson[key]['id']
             totalHours = theJson[key]['Total']
+            print "Trying to create " + str(key)
         
             ### Set Lead JSON - Default USer is Admin
             ### Want to create all these fields, but API blocks them
             data = {
                 "lead": {
                     "primaryAccount": {"id": companyID},
-                    "name": "3Q2015 Maintenance",
+                    "name": "4Q2015 Maintenance",
                     "status": 10,
                     "createdTime": "2015-07-01T00:10:01-01:00",
                     "dueTime": "2015-09-30T23:59:19-05:00",
@@ -111,28 +126,29 @@ if __name__ == '__main__':
                     "assignee": {
                         "entityType": "Users",
                         "id": 29
-                    }
+                    },
+                    "note": ["testByMark"]
                 }
             }
             res = createLead(apiUrl, data)
             ### Want to edit the lead here
-            data = {
-                "lead": {
-                    "primaryAccount": {"id": companyID},
-                    "name": "4Q2015 Maintenance",
-                    "status": 10,
-                    "createdTime": "2015-07-01T00:10:01-01:00",
-                    "outcome": {
-                        "id": "",
-                        "entityType": "Lead_Outcomes",
-                        "rev": res["lead"]["rev"],
-                        "type": 10,
-                        "description": "Won"
-                    }
-                    "closedTime": "2015-12-31T23:59:19-05:00"
-                }
-            }
-            #res = editLead(apiUrl, res["lead"]["rev"], data)
+            #data = {
+            #    "lead": {
+            #        "primaryAccount": {"id": companyID},
+            #        "name": "4Q2015 Maintenance",
+            #        "status": 10,
+            #        "createdTime": "2015-10-01T00:10:01-01:00",
+            #        "outcome": {
+            #            "id": "",
+            #            "entityType": "Lead_Outcomes",
+            #            "rev": res["rev"],
+            #            "type": 10,
+            #            "description": "Won"
+            #        },
+            #        "closedTime": "2015-12-31T23:59:19-05:00"
+            #    }
+            #}
+            #res = editLead(apiUrl, res["id"], res["rev"], data)
             #print json.dumps(res)
         count += 1
 
