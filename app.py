@@ -130,7 +130,13 @@ if __name__ == '__main__':
                     "note": ["testByMark"]
                 }
             }
+            #data = {
+            #   "lead": {
+            #      "primaryAccount": {}
+            #   }
+            #}
             res = createLead(apiUrl, data)
+            print json.dumps(res)
             ### Want to edit the lead here
             #data = {
             #    "lead": {

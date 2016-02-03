@@ -42,7 +42,7 @@ def postUrl(theurl, thePost):
 
     req = urllib2.Request(theurl)
     config = getConfig()
-    print json.dumps(config)
+    #print json.dumps(config)
     user = config['username']
     password = config['api_key']
     auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
@@ -92,15 +92,19 @@ def createLead(apiEndpoint, data=None):
     }
     #res = postUrl(apiEndpoint, theJson)
     resCreate = requests.post(apiEndpoint, headers=headers, data=json.dumps(theJson))
+    print "Headers sent:"
+    print resCreate.request.headers
     print "Response Code:"
     print resCreate.status_code
+    print resCreate.headers
+    print resCreate.cookies
     try:
-        print "Response JSON:\n" + json.dumps(resCreate.json())
+        print "Response JSON:\n" + json.dumps(resJson.json())
     except:
         print "Response JSON: None\n"
 
     try:
-        return resCreate.text
+        return resJson.json()
     except:
         return { "response": "no JSON response received" }
 
