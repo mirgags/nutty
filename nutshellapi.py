@@ -123,6 +123,30 @@ def editLead(apiEndpoint, leadId, revId, data=None):
     except:
         return { "response": "no JSON response received" }
 
+def getLastLead(apiEndpoint):
+    config = getConfig()
+    user = config['username']
+    password = config['api_key']
+    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
+    headers = {
+    'authorization': auth,
+    'content-type': 'application/json'
+    }
+    theJson = {
+        "method": "findLeads",
+        "params": {
+            "query": {"status": 0},
+            "orderBy": "id",
+            "limit": 1
+        }
+    }
+    resCreate = requests.post(apiEndpoint, headers=headers, data=json.dumps(theJson))
+    print "Response Code: " + str(resCreate.status_code)
+    try:
+        return resCreate.json()
+    except:
+        return {"response": "No JSON returned"}
+
 
 def getProducts(apiEndpoint):
     theJson = { "method": "findProducts",

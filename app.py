@@ -77,11 +77,11 @@ if __name__ == '__main__':
 
     count = 0
     for key in theJson:
-        if count == 3 and theJson[key]['Total'] > 0:
+        if theJson[key]['Total'] > 0:
             companyID = theJson[key]['id']
             totalHours = theJson[key]['Total']
             print "Trying to create " + str(key)
-        
+            
             ### Set Lead JSON - Default USer is Admin
             ### Want to create all these fields, but API blocks them
             data = {
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                         "entityType": "Users",
                         "id": 29
                     },
-                    "note": ["testByMark"]
+                    "note": ["Maintenance Invoice 2016-01-31"]
                 }
             }
             #data = {
@@ -135,8 +135,12 @@ if __name__ == '__main__':
             #      "primaryAccount": {}
             #   }
             #}
-            res = createLead(apiUrl, data)
-            print json.dumps(res)
+            ### For testing, use if statement
+            if key == "DaVita VillageHealth Plans":
+                res = createLead(apiUrl, data)
+                print json.dumps(res)
+                res = getLastLead(apiUrl)
+                print json.dumps(res)
             ### Want to edit the lead here
             #data = {
             #    "lead": {
