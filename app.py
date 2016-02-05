@@ -138,9 +138,11 @@ if __name__ == '__main__':
             ### For testing, use if statement
             if key == "DaVita VillageHealth Plans":
                 res = createLead(apiUrl, data)
+                ### Testing
+                #res = createLead("http://requestb.in/16jn2ql1", data)
                 print json.dumps(res)
-                res = getLastLead(apiUrl)
-                print json.dumps(res)
+                #res = getLastLead(apiUrl)
+                #print json.dumps(res)
             ### Want to edit the lead here
             #data = {
             #    "lead": {

@@ -84,14 +84,15 @@ def createLead(apiEndpoint, data=None):
     auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
     headers = {
     'authorization': auth,
-    'content-type': 'application/json'
+    'content-type': 'application/json',
+    'accept-encoding': '*'
     }
     theJson = {
         "method": "newLead",
         "params": data
     }
     #res = postUrl(apiEndpoint, theJson)
-    resCreate = requests.post(apiEndpoint, headers=headers, data=json.dumps(theJson))
+    resCreate = requests.post(apiEndpoint, headers=headers, json=theJson)
     print "Headers sent:"
     print resCreate.request.headers
     print "Response Code:"
