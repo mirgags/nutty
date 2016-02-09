@@ -4,6 +4,7 @@ import urllib2
 import json
 import datetime
 import base64
+import requests
 
 ### Retrieve API key from local file ./config.json
 def getConfig():
@@ -41,7 +42,7 @@ def postUrl(theurl, thePost):
 
     req = urllib2.Request(theurl)
     config = getConfig()
-    print json.dumps(config)
+    #print json.dumps(config)
     user = config['username']
     password = config['api_key']
     auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
@@ -57,25 +58,96 @@ def discoverEndpoint():
                 "id": "apeye"
               }
     res = postUrl('http://api.nutshell.com/v1/json', theJson)
-    print res.code
+    #print res.code
     resJson = json.loads(res.read())
-    print resJson
+    #print resJson
     apiEndpoint = 'https://' + resJson['result']['api'] + '/api/v1/json'
-    print apiEndpoint
+    #print apiEndpoint
     return apiEndpoint
 
+def findLeadOutcomes(apiEndpoint):
+    theJson = {
+        "method": "findLead_Outcomes"
+    }
+    res = postUrl(apiEndpoint, theJson)
+    print res.read()
+    try:
+        return json.loads(res.read())
+    except:
+        return { "response": "no JSON response received" }
+
 def createLead(apiEndpoint, data=None):
+    config = getConfig()
+    print json.dumps(config)
+    user = config['username']
+    password = config['api_key']
+    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
+    headers = {
+    'authorization': auth,
+    'content-type': 'application/json',
+    'accept-encoding': '*'
+    }
     theJson = {
         "method": "newLead",
         "params": data
     }
-    res = postUrl(apiEndpoint, theJson)
-    print res.read()
-    print res.info()
+    #res = postUrl(apiEndpoint, theJson)
+    resCreate = requests.post(apiEndpoint, headers=headers, json=theJson)
+    print "Headers sent:"
+    print resCreate.request.headers
+    print "Response Code:"
+    print resCreate.status_code
+    print resCreate.headers
+    print resCreate.cookies
+    try:
+        print "Response JSON:\n" + json.dumps(resJson.json())
+    except:
+        print "Response JSON: None\n"
+
+    try:
+        return resJson.json()
+    except:
+        return { "response": "no JSON response received" }
+
+def editLead(apiEndpoint, leadId, revId, data=None):
+    theJson = {
+        "method": "editLead",
+        "params": {
+            "leadId": leadId,
+            "rev": revId,
+            "lead": data["lead"]
+        }
+    }
+    res = postUrl(apiEndpoint, revId, theJson)
     try:
         return res
     except:
         return { "response": "no JSON response received" }
+
+def getLastLead(apiEndpoint):
+    config = getConfig()
+    user = config['username']
+    password = config['api_key']
+    auth = 'Basic ' + base64.urlsafe_b64encode("%s:%s" % (user, password))
+    headers = {
+    'authorization': auth,
+    'content-type': 'application/json'
+    }
+    theJson = {
+        "method": "findLeads",
+        "params": {
+            "query": {"status": 0},
+            "orderBy": "id",
+            "limit": 1
+        }
+    }
+    resCreate = requests.post(apiEndpoint, headers=headers, data=json.dumps(theJson))
+    print "Response Code: " + str(resCreate.status_code)
+    try:
+        return resCreate.json()
+    except:
+        return {"response": "No JSON returned"}
+
 
 def getProducts(apiEndpoint):
     theJson = { "method": "findProducts",
