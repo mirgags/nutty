@@ -71,8 +71,9 @@ def createLead(apiEndpoint, data=None):
     }
     res = postUrl(apiEndpoint, theJson)
     print res.read()
+    print res.info()
     try:
-        return json.loads(res.read())
+        return res
     except:
         return { "response": "no JSON response received" }
 

@@ -1,5 +1,5 @@
 from nutshellapi import *
-import csv, re
+import csv, re, requests
 
 def parseCsv(csvFile):
     theList = []
@@ -115,6 +115,8 @@ if __name__ == '__main__':
                 }
             }
             res = createLead(apiUrl, data)
+            print res.read()
+            #res = requests.post(apiUrl, res)
             #print json.dumps(res)
         count += 1
 
